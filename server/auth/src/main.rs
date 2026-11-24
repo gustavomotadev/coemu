@@ -52,10 +52,15 @@ Copyright 2020-2023 Shady Khalifa (@shekohex)
     auth::add_to_linker(&mut linker)?;
     tracing::info!("Loading Packet and handlers..");
 
-    let msg_connect = Module::from_file(&engine, "./target/wasm32-unknown-unknown/wasm/msg_connect.s.wasm")?;
+    let msg_connect = Module::from_file(&engine,
+        msg_connect::WASM_BINARY.unwrap_or("./target/wasm32-unknown-unknown/wasm/msg_connect.s.wasm"),
+    )?;
+    let msg_account = Module::from_file(&engine,
+        msg_account::WASM_BINARY.unwrap_or("./target/wasm32-unknown-unknown/wasm/msg_account.s.wasm"),
+    )?;
     tracing::info!("Initializing State ..");
     let state = State::init().await?;
-    let packets = auth::Packets { msg_connect };
+    let packets = auth::Packets { msg_connect, msg_account, };
 
     let static_runtime = {
         let runtime = Runtime {
